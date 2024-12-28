@@ -1,1 +1,3 @@
 Hello world ! !
+get input from users 
+add values
