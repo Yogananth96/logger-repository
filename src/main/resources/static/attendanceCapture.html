@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Capture</title>
+    <script src="https://cdn.jsdelivr.net/npm/webcamjs/webcam.min.js"></script>
+</head>
+<body>
+
+    <h2>Register Attendance</h2>
+
+    <form action="/registerAttendance" method="POST" enctype="multipart/form-data">
+        <label for="employeeId">Select Employee:</label>
+        <select id="employeeId" name="employeeId">
+            <c:forEach var="employee" items="${employeeList}">
+                <option value="${employee.employeeid}">${employee.employeeName}</option>
+            </c:forEach>
+        </select>
+
+        <br><br>
+        <label for="capturedImage">Captured Image:</label>
+        <div id="camera"></div>
+        <button type="button" onclick="takeSnapshot()">Capture Image</button>
+        <input type="file" id="capturedImage" name="capturedImage" style="display:none;" />
+        <br><br>
+        <input type="submit" value="Register Attendance">
+    </form>
+
+    <div id="message">${message}</div>
+
+    <script>
+        // Initialize webcam
+        Webcam.set({
+            width: 320,
+            height: 240,
+            image_format: 'jpeg',
+            jpeg_quality: 90
+        });
+        Webcam.attach('#camera');
+
+        function takeSnapshot() {
+            Webcam.snap(function(data_uri) {
+                // Display captured image and prepare for file upload
+                var image = dataURItoBlob(data_uri);
+                document.getElementById('capturedImage').files = new DataTransfer().items.add(image);
+            });
+        }
+
+        // Convert data URI to Blob
+        function dataURItoBlob(dataURI) {
+            var byteString = atob(dataURI.split(',')[1]);
+            var ab = new ArrayBuffer(byteString.length);
+            var ia = new Uint8Array(ab);
+            for (var i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: 'image/jpeg' });
+        }
+    </script>
+
+</body>
+</html>
